@@ -1,0 +1,10 @@
+--- a/arch/arm64/boot/dts/marvell/Makefile
++++ b/arch/arm64/boot/dts/marvell/Makefile
+@@ -10,6 +10,7 @@ dtb-$(CONFIG_ARCH_MVEBU) += armada-7040-
+ dtb-$(CONFIG_ARCH_MVEBU) += armada-8040-db.dtb
+ dtb-$(CONFIG_ARCH_MVEBU) += armada-8040-mcbin.dtb
+ dtb-$(CONFIG_ARCH_MVEBU) += armada-8080-db.dtb
++dtb-$(CONFIG_ARCH_MVEBU) += methode-micro-DPU.dtb
+ 
+ always		:= $(dtb-y)
+ subdir-y	:= $(dts-dirs)
