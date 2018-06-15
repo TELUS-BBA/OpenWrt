@@ -19,6 +19,9 @@ platform_do_upgrade() {
 	armada-385-turris-omnia|armada-388-clearfog-base|armada-388-clearfog-pro|globalscale,espressobin|marvell,armada8040-mcbin)
 		platform_do_upgrade_sdcard "$ARGV"
 		;;
+	methode,micro-DPU)
+		platform_do_upgrade_ubi "$ARGV"
+		;;
 	*)
 		default_do_upgrade "$ARGV"
 		;;
