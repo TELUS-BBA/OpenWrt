@@ -63,6 +63,72 @@
 		reg = <0x00000000 0x00000000 0x00000000 0x20000000>;
 	};
 
+	soc {
+		internal-regs {
+
+			u3d@50000 {
+				status = "disabled";
+			};
+
+			udc@54100 {
+				status = "disabled";
+			};
+
+                        mdio@32004 {
+                                phy0: ethernet-phy@0 {
+                                        reg = <0>;
+                                };
+                                phy1: ethernet-phy@1 {
+                                        reg = <1>;
+                                };
+                        };
+
+
+
+			/* CON31 */
+			usb3@58000 {
+				status = "disabled";
+				usb-phy = <&usb3_phy>;
+			};
+
+			usb@5e000 {
+				status = "okay";
+			};
+
+			interrupt-controller@74840 {
+				status = "okay";
+			};
+
+		};
+
+                leds {
+                        pinctrl-names = "default";
+                        compatible = "gpio-leds";
+
+                        led@1 {
+                                label = "power:red:user1";
+                                gpios = <&gpiosb 1 GPIO_ACTIVE_LOW>;
+                                linux,default-trigger = "heartbeat";
+                                default-state = "off";
+                        };
+
+                        led@2 {
+                                label = "network:green:user2";
+                                gpios = <&gpiosb 2 GPIO_ACTIVE_HIGH>;
+                                linux,default-trigger = "network";
+                                default-state = "off";
+                        };
+
+                        led@3 {
+                                label = "alarm:green:user3";
+                                gpios = <&gpiosb 3 GPIO_ACTIVE_HIGH>;
+                                linux,default-trigger = "alarm";
+                                default-state = "off";
+                        };
+		};
+
+	};
+
 	usb3_phy: usb3-phy {
 		compatible = "usb-nop-xceiv";
 		vcc-supply = <&exp_usb3_vbus>;
@@ -128,24 +194,6 @@
 	status = "okay";
 };
 
-/*
-u3d@50000 {
-	status = "disabled";
-};
-
-udc@54100 {
-	status = "disabled";
-};
-*/
-&mdio {
-	phy0: ethernet-phy@0 {
-		reg = <0>;
-	};
-	phy1: ethernet-phy@1 {
-		reg = <1>;
-	};
-};
-
 &eth0 {
 	phy-mode = "sgmii";
 	status = "okay";
@@ -163,40 +211,3 @@ udc@54100 {
 		full-duplex;
 	};
 };
-
-/* CON31 */
-&usb3 {
-	status = "okay";
-	usb-phy = <&usb3_phy>;
-};
-
-/*interrupt-controller@74840 {
-	status = "okay";
-}; */
-
-/* 
-leds {
-	pinctrl-names = "default";
-	compatible = "gpio-leds";
-
-	led@1 {
-		label = "power:red:user1";
-		gpios = <&gpio_sb 1 GPIO_ACTIVE_LOW>;
-		linux,default-trigger = "heartbeat";
-		default-state = "off";
-	};
-
-	led@2 {
-		label = "network:green:user2";
-		gpios = <&gpio_sb 2 GPIO_ACTIVE_HIGH>;
-		linux,default-trigger = "network";
-		default-state = "off";
-	};
-
-	led@3 {
-		label = "alarm:green:user3";
-		gpios = <&gpio_sb 3 GPIO_ACTIVE_HIGH>;
-		linux,default-trigger = "alarm";
-		default-state = "off";
-	};
-}; */
