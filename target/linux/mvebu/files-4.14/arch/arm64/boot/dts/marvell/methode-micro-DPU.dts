@@ -99,22 +99,43 @@
 		compatible = "gpio-leds";
 
 		led@1 {
-			label = "power:red:user1";
-			gpios = <&gpiosb 1 GPIO_ACTIVE_LOW>;
+			label = "power:green:led1";
+			gpios = <&gpionb 11 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "heartbeat";
 			default-state = "off";
 		};
 
 		led@2 {
-			label = "network:green:user2";
-			gpios = <&gpiosb 2 GPIO_ACTIVE_HIGH>;
-			linux,default-trigger = "network";
+			label = "power:red:led1";
+			gpios = <&gpionb 12 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "heartbeat";
 			default-state = "off";
 		};
 
 		led@3 {
-			label = "alarm:green:user3";
-			gpios = <&gpiosb 3 GPIO_ACTIVE_HIGH>;
+			label = "network:green:led2";
+			gpios = <&gpionb 13 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "network";
+			default-state = "off";
+		};
+
+		led@4 {
+			label = "network:red:led2";
+			gpios = <&gpionb 14 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "network";
+			default-state = "off";
+		};
+
+		led@5 {
+			label = "alarm:green:led3";
+			gpios = <&gpionb 15 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "alarm";
+			default-state = "off";
+		};
+
+		led@6 {
+			label = "alarm:red:led3";
+			gpios = <&gpionb 16 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "alarm";
 			default-state = "off";
 		};
