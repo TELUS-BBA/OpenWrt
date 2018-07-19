@@ -63,77 +63,46 @@
 		reg = <0x00000000 0x00000000 0x00000000 0x20000000>;
 	};
 
-	u3d@50000 {
-		status = "disabled";
-	};
-
-	udc@54100 {
-		status = "disabled";
-	};
-
-	mdio@32004 {
-		phy0: ethernet-phy@0 {
-			reg = <0>;
-		};
-		phy1: ethernet-phy@1 {
-			reg = <1>;
-		};
-	};
-
-	/* CON31 */
-	usb3@58000 {
-		status = "okay";
-		usb-phy = <&usb3_phy>;
-	};
-
-	usb@5e000 {
-		status = "okay";
-	};
-
-	interrupt-controller@74840 {
-		status = "okay";
-	};
-
 	leds {
 		pinctrl-names = "default";
 		compatible = "gpio-leds";
 
-		led@1 {
+		led@487 {
 			label = "power:green:led1";
 			gpios = <&gpionb 11 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "heartbeat";
 			default-state = "off";
 		};
 
-		led@2 {
+		led@488 {
 			label = "power:red:led1";
 			gpios = <&gpionb 12 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "heartbeat";
 			default-state = "off";
 		};
 
-		led@3 {
+		led@489 {
 			label = "network:green:led2";
 			gpios = <&gpionb 13 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "network";
 			default-state = "off";
 		};
 
-		led@4 {
+		led@490 {
 			label = "network:red:led2";
 			gpios = <&gpionb 14 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "network";
 			default-state = "off";
 		};
 
-		led@5 {
+		led@491 {
 			label = "alarm:green:led3";
 			gpios = <&gpionb 15 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "alarm";
 			default-state = "off";
 		};
 
-		led@6 {
+		led@492 {
 			label = "alarm:red:led3";
 			gpios = <&gpionb 16 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "alarm";
@@ -154,6 +123,31 @@
 		enable-active-high;
 		regulator-always-on;
 	};
+};
+
+&mdio {
+	phy0: ethernet-phy@0 {
+		reg = <0>;
+	};
+	phy1: ethernet-phy@1 {
+		reg = <1>;
+	};
+};
+
+/* CON31 */
+&usb3 {
+	status = "okay";
+	usb-phy = <&usb3_phy>;
+};
+
+/* Not used? */
+/* &usb2 {
+	status = "okay";
+}; */
+
+/* Interrupt controller */
+&gic {
+	status = "okay";
 };
 
 &spi0 {
