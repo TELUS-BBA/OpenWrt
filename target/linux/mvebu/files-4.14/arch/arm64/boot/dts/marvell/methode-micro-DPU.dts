@@ -193,7 +193,9 @@
 
 &i2c0 {
 	status = "okay";
-	clock-frequency = <400000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c1_pins>;
+
 	eeprom@50 {
 		compatible = "at24,24c04";
 		reg = <0x50>;
@@ -202,7 +204,9 @@
 
 &i2c1 {
 	status = "okay";
-	clock-frequency = <400000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c2_pins>;
+
 	eeprom@50 {
 		compatible = "at24,24c04";
 		reg = <0x50>;
@@ -220,7 +224,6 @@
 &eth0 {
 	phy-mode = "sgmii";
 	status = "okay";
-	managed = "in-band-status";
 	sfp = <&sfp_eth0>;
 
 	fixed-link {
