@@ -30,7 +30,7 @@ define Device/methode-micro-DPU
   BLOCKSIZE := 64k
   PAGESIZE := 128
   SUBPAGESIZE := 1
-  FILESYSTEMS := ubifs
+  FILESYSTEMS := squashfs ubifs
   UBIFS_OPTS := -m 8 -e 65408 -c 2048
   KERNEL_NAME := Image
   KERNEL_SUFFIX :=
