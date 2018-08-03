@@ -148,6 +148,7 @@
 };
 
 &mdio {
+	status = "okay";
 	phy0: ethernet-phy@0 {
 		reg = <0>;
 	};
@@ -197,7 +198,7 @@
 	pinctrl-0 = <&i2c1_pins>;
 
 	eeprom@50 {
-		compatible = "at24,24c04";
+		compatible = "atmel,24c04";
 		reg = <0x50>;
 	};
 };
@@ -208,7 +209,7 @@
 	pinctrl-0 = <&i2c2_pins>;
 
 	eeprom@50 {
-		compatible = "at24,24c04";
+		compatible = "atmel,24c04";
 		reg = <0x50>;
 	};
 };
@@ -224,21 +225,13 @@
 &eth0 {
 	phy-mode = "sgmii";
 	status = "okay";
+	managed = "in-band-status";
 	sfp = <&sfp_eth0>;
-
-	fixed-link {
-		speed = <1000>;
-		full-duplex;
-	};
 };
 
 &eth1 {
 	phy-mode = "sgmii";
 	status = "okay";
+	managed = "in-band-status";
 	sfp = <&sfp_eth1>;
-
-	fixed-link {
-		speed = <1000>;
-		full-duplex;
-	};
 };
