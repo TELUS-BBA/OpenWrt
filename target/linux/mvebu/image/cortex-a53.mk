@@ -26,4 +26,25 @@ define Device/armada-3720-db
 endef
 TARGET_DEVICES += armada-3720-db
 
+define Device/methode-micro-DPU
+  BLOCKSIZE := 64k
+  PAGESIZE := 128
+  SUBPAGESIZE := 1
+  FILESYSTEMS := squashfs ubifs
+  UBIFS_OPTS := -m 8 -e 65408 -c 2048
+  KERNEL_NAME := Image
+  KERNEL_SUFFIX :=
+  KERNEL := kernel-bin | install-dtb
+  KERNEL_IN_UBI := 1
+  DEVICE_TITLE := Methode micro-DPU Board
+  DEVICE_PACKAGES := ethtool kmod-usb2 kmod-usb3 kmod-e100 kmod-e1000 kmod-e1000e kmod-igb kmod-ixgbevf kmod-mdio-gpio kmod-sky2 kmod-switch-mvsw61xx kmod-bonding
+  IMAGES := sysupgrade.bin factory.ubi
+  IMAGE/sysupgrade.bin := sysupgrade-ubi
+  IMAGE/factory.ubi := factory-ubi
+  DEVICE_DTS := methode-micro-DPU
+  DTS_DIR := $(DTS_DIR)/marvell
+  SUPPORTED_DEVICES := methode,micro-DPU
+endef
+TARGET_DEVICES += methode-micro-DPU
+
 endif
