@@ -80,6 +80,22 @@ define Build/omnia-medkit-initramfs
 		--file=$@ -C $(dir $(IMAGE_KERNEL))boot/ .
 endef
 
+define Build/sysupgrade-ubi
+	mkdir -p $(TARGET_DIR)/boot
+	$(foreach dts,$(DEVICE_DTS), $(CP) $(DTS_DIR)/$(dts).dtb $(TARGET_DIR)/boot;)
+	$(CP) $(IMAGE_KERNEL) $(TARGET_DIR)/boot/$(KERNEL_NAME)
+	$(STAGING_DIR_HOST)/bin/mkfs.ubifs \
+		-d $(TARGET_DIR) $(UBIFS_OPTS) -o $(STAGING_DIR)/$(IMG_PREFIX).img
+	$(CP) $(STAGING_DIR)/$(IMG_PREFIX).img $(BIN_DIR)/$(IMG_PREFIX)-$(DEVICE_NAME)-sysupgrade.bin
+endef
+
+define Build/factory-ubi
+	$(Device/sysupgrade-ubi)
+	echo -e "[rootfs]\nmode=ubi\nimage=$(STAGING_DIR)/$(IMG_PREFIX).img\nvol_id=0\nvol_type=dynamic\nvol_name=rootfs\nvol_size=110MiB\nvol_flags=autoresize" > $(STAGING_DIR)/ubi_cfg.ini
+	$(STAGING_DIR_HOST)/bin/ubinize \
+		-o $(BIN_DIR)/$(IMG_PREFIX)-$(DEVICE_NAME)-factory.ubi -p 64KiB -m 8 -s 1 $(STAGING_DIR)/ubi_cfg.ini
+endef
+
 define Device/Default
   PROFILES := Default
   DEVICE_DTS := $(1)
