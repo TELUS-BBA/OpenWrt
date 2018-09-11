@@ -37,7 +37,7 @@ define Device/methode-micro-DPU
   KERNEL := kernel-bin | install-dtb
   KERNEL_IN_UBI := 1
   DEVICE_TITLE := Methode micro-DPU Board
-  DEVICE_PACKAGES := ethtool kmod-usb2 kmod-usb3 kmod-eeprom-at24 kmod-e100 kmod-e1000 kmod-e1000e kmod-igb kmod-ixgbevf kmod-mdio-gpio kmod-sky2 kmod-switch-mvsw61xx kmod-bonding
+  DEVICE_PACKAGES := ethtool kmod-usb2 kmod-usb3 kmod-e100 kmod-e1000 kmod-e1000e kmod-igb kmod-ixgbevf kmod-mdio-gpio kmod-sky2 kmod-switch-mvsw61xx kmod-bonding
   IMAGES := sysupgrade.bin factory.ubi
   IMAGE/sysupgrade.bin := sysupgrade-ubi
   IMAGE/factory.ubi := factory-ubi
