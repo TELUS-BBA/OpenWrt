@@ -39,7 +39,7 @@ define Device/methode-micro-DPU
   DEVICE_TITLE := Methode micro-DPU Board
   DEVICE_PACKAGES := ethtool kmod-usb2 kmod-usb3 kmod-eeprom-at24 kmod-e100 kmod-e1000 kmod-e1000e kmod-igb kmod-ixgbevf kmod-mdio-gpio kmod-sky2 kmod-switch-mvsw61xx kmod-bonding
   IMAGES := sysupgrade.bin factory.ubi
-  IMAGE/sysupgrade.bin := sysupgrade-ubi | append-metadata
+  IMAGE/sysupgrade.bin := sysupgrade-ubi
   IMAGE/factory.ubi := factory-ubi
   DEVICE_DTS := methode-micro-DPU
   DTS_DIR := $(DTS_DIR)/marvell
