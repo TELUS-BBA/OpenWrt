@@ -11,6 +11,8 @@ include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/version.mk
 include $(INCLUDE_DIR)/feeds.mk
 
+VERBOSE:=1
+
 PKG_NAME:=base-files
 PKG_RELEASE:=195
 PKG_FLAGS:=nonshared
