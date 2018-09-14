@@ -45,11 +45,7 @@ define Package/ethtool/config
 		bool "Enable pretty printing"
 endef
 
-ifeq ($(CONFIG_ETHTOOL_PRETTY_DUMP),y)
 CONFIGURE_ARGS += --enable-pretty-dump
-else
-CONFIGURE_ARGS += --disable-pretty-dump
-endif
 
 define Package/ethtool/install
 	$(INSTALL_DIR) $(1)/usr/sbin
