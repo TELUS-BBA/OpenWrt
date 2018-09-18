@@ -1,0 +1,39 @@
+#!/bin/sh
+#
+# Will run once and then it will be removed.
+#
+
+set_fw_env()
+{
+	fw_env="/dev/mmcblk0 0xf0000 0x10000 0x1000"
+	echo $fw_env > /etc/fw_env.config
+	fsync /etc/fw_env.config
+}
+
+set_persistent_mac ()
+{
+	eth0_addr=$(cat /sys/class/net/eth0/address)
+	eth1_addr=$(cat /sys/class/net/eth1/address)
+	eth2_addr=$(cat /sys/class/net/eth2/address)
+
+	fw_setenv eth1addr $eth0_addr
+	fw_setenv eth2addr $eth1_addr
+	fw_setenv eth3addr $eth2_addr
+}
+
+main()
+{
+	machine=$(cat /proc/device-tree/model)
+	case "$machine" in
+		*"SolidRun Clearfog Base A1")
+			set_fw_env
+			set_persistent_mac
+			;;
+		*)
+			exit 0
+			;;
+	esac
+}
+
+main
+exit 0

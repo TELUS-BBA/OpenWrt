@@ -3,6 +3,9 @@
 # This script assumes that there is a boot partition,
 # and that the root partition is always the next one.
 
+# Create env on MMC so userspace can use it
+saveenv
+
 # Override DeviceTree for Clearfog Base
 # removed once U-Boot is able to detect the board variant.
 setenv fdtfile armada-388-clearfog-base.dtb
