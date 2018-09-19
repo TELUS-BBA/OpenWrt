@@ -58,7 +58,11 @@ define KernelPackage/ledtrig-netdev
   SUBMENU:=$(LEDS_MENU)
   TITLE:=LED NETDEV Trigger
   KCONFIG:=CONFIG_LEDS_TRIGGER_NETDEV
+  ifeq ($(strip $(call CompareKernelPatchVer,$(KERNEL_PATCHVER),lt,4.19.0)),1)
   FILES:=$(LINUX_DIR)/drivers/leds/ledtrig-netdev.ko
+  else
+  FILES:=$(LINUX_DIR)/drivers/leds/trigger/ledtrig-netdev.ko
+  endif
   AUTOLOAD:=$(call AutoLoad,50,ledtrig-netdev)
 endef
 
