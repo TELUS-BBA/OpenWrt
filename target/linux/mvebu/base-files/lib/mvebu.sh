@@ -80,6 +80,9 @@ mvebu_board_detect() {
 	*"Turris Omnia")
 		name="armada-385-turris-omnia"
 		;;
+	*"Methode uDPU Board")
+		name="methode,uDPU"
+		;;
 	esac
 
 	[ -z "$name" ] && name="unknown"

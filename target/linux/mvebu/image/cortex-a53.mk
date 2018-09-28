@@ -26,4 +26,18 @@ define Device/armada-3720-db
 endef
 TARGET_DEVICES += armada-3720-db
 
+define Device/uDPU
+  KERNEL_NAME := Image
+  KERNEL := kernel-bin | install-dtb
+  DEVICE_TITLE := Methode uDPU Board
+  DEVICE_PACKAGES := ethtool kmod-usb2 kmod-usb3 kmod-e100 kmod-e1000 kmod-e1000e kmod-igb kmod-ixgbevf kmod-mdio-gpio kmod-sky2 kmod-switch-mvsw61xx kmod-bonding
+  IMAGES := sysupgrade.bin factory.ubi
+  IMAGE/sysupgrade.bin := sysupgrade-ubi
+  IMAGE/factory.ubi := factory-ubi
+  DEVICE_DTS := uDPU
+  DTS_DIR := $(DTS_DIR)/marvell
+  SUPPORTED_DEVICES := methode,uDPU
+endef
+TARGET_DEVICES += uDPU
+
 endif
