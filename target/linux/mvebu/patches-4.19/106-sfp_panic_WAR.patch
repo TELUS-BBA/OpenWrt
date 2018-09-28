@@ -1,0 +1,11 @@
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -1447,7 +1447,7 @@ static void sfp_sm_mod_remove(struct sfp
+ {
+ 	sfp_module_remove(sfp->sfp_bus);
+ 
+-	sfp_hwmon_remove(sfp);
++/*	sfp_hwmon_remove(sfp); */
+ 
+ 	if (sfp->mod_phy)
+ 		sfp_sm_phy_detach(sfp);
