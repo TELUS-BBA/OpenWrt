@@ -142,9 +142,57 @@
 		tx-fault-gpio = <&gpiosb 10 GPIO_ACTIVE_HIGH>;
 	};
 
+	vcc_sd_reg1: regulator {
+		compatible = "regulator-gpio";
+		regulator-name = "vcc_sd1";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-boot-on;
+
+		gpios = <&gpiosb 23 GPIO_ACTIVE_HIGH>;
+		gpios-states = <0>;
+		states = <1800000 0x1
+			  3300000 0x0>;
+		enable-active-high;
+	};
+
+	vcc_sd_reg2: regulator-vmcc {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc_sd2";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-boot-on;
+		enable-active-high;
+		gpio = <&gpio_exp 4 GPIO_ACTIVE_HIGH>;
+	};
+
 	interrupt-controller@74840 {
 		status = "okay";
 	};
+};
+
+&sdhci0 {
+	marvell,xenon-phy-type = "emmc 5.0 phy";
+	non-removable;
+	bus-width = <1>;
+	mmc-ddr-1_8v;
+	mmc-hs400-1_8v;
+	marvell,pad-type = "fixed-1-8v";
+	status = "okay";
+};
+
+/* SD slot module on CON14(V2.0)/CON15(V1.4) */
+&sdhci1 {
+	marvell,xenon-phy-type = "emmc 5.0 phy";
+	cd-gpios = <&gpiosb 2 GPIO_ACTIVE_LOW>;
+	bus-width = <1>;
+	marvell,pad-type = "fixed-1-8v";
+	vqmmc-supply = <&vcc_sd_reg1>;
+	vmmc-supply = <&vcc_sd_reg2>;
+	status = "okay";
+	non-removable;
+	no-sd;
+	no-sdio;
 };
 
 &mdio {
@@ -196,6 +244,31 @@
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c1_pins>;
+
+	gpio_exp: pca9555@22 {
+		compatible = "nxp,pca9555";
+		gpio-controller;
+		#gpio-cells = <2>;
+
+		reg = <0x22>;
+		/*
+		 * IO0_0: PWR_EN_USB2	IO1_0: PWR_EN_VTT
+		 * IO0_1: PWR_EN_USB23	IO1_1: MPCIE_WDISABLE
+		 * IO0_2: PWR_EN_SATA	IO1_2: RGMII_DEV_RSTN
+		 * IO0_3: PWR_EN_PCIE	IO1_3: SGMII_DEV_RSTN
+		 * IO0_4: PWR_EN_SD
+		 * IO0_5: PWR_EN_EMMC
+		 * IO0_6: PWR_EN_RGMII	IO1_6: SATA_USB3.0_SEL
+		 * IO0_7: PWR_EN_SGMII	IO1_7: PWR_MCI_PS
+		 */
+	};
+
+	rtc@68  {
+		/* PT7C4337A from pericom fully compatible with the ds1337 */
+		compatible = "dallas,ds1337";
+		reg = <0x68>;
+	};
+
 
 	eeprom@50 {
 		compatible = "atmel,24c04";

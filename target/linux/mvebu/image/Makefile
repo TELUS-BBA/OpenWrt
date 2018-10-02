@@ -80,6 +80,12 @@ define Build/omnia-medkit-initramfs
 		--file=$@ -C $(dir $(IMAGE_KERNEL))boot/ .
 endef
 
+define Build/rootfs-full
+	mkdir -p $(TARGET_DIR)/boot
+	$(foreach dts,$(DEVICE_DTS), $(CP) $(DTS_DIR)/$(dts).dtb $(TARGET_DIR)/boot;)
+	$(CP) $(IMAGE_KERNEL) $(TARGET_DIR)/boot/$(KERNEL_NAME)
+endef
+
 define Device/Default
   PROFILES := Default
   DEVICE_DTS := $(1)
