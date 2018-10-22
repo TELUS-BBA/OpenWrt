@@ -230,7 +230,7 @@
 };
 
 &eth1 {
-	phy-mode = "2500base-x";
+	phy-mode = "sgmii";
 	status = "okay";
 	managed = "in-band-status";
 	sfp = <&sfp_eth1>;

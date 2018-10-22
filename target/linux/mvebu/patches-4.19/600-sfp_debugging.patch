@@ -1,0 +1,13 @@
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -1644,6 +1644,10 @@ static int phylink_sfp_module_insert(voi
+ 		netdev_info(pl->netdev, "switched to %s/%s link mode\n",
+ 			    phylink_an_mode_str(MLO_AN_INBAND),
+ 			    phy_modes(config.interface));
++	} else {
++		netdev_info(pl->netdev, "not switched to %s/%s link mode\n",
++			phylink_an_mode_str(MLO_AN_INBAND),
++			phy_modes(config.interface));
+ 	}
+ 
+ 	pl->link_port = port;
