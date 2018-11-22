@@ -28,12 +28,17 @@ TARGET_DEVICES += armada-3720-db
 
 define Device/uDPU
   KERNEL_NAME := Image
+  KERNEL_LOADADDR := 0x00080000
   KERNEL := kernel-bin | install-dtb
+  KERNEL_INITRAMFS_PREFIX := $$(IMG_PREFIX)-$$(DEVICE_NAME)-initramfs
+  KERNEL_INITRAMFS_SUFFIX := .itb
+  KERNEL_INITRAMFS := kernel-bin | gzip | fit gzip $$(DTS_DIR)/$$(DEVICE_DTS).dtb
   DEVICE_TITLE := Methode uDPU Board
-  DEVICE_PACKAGES := e2fsprogs ethtool kmod-usb2 kmod-usb3 kmod-e100 kmod-e1000 kmod-e1000e \
+  DEVICE_PACKAGES := f2fs-tools e2fsprogs fdisk ethtool kmod-usb2 kmod-usb3 kmod-e100 kmod-e1000 kmod-e1000e \
 			kmod-igb kmod-ixgbevf kmod-mdio-gpio kmod-sky2 kmod-switch-mvsw61xx kmod-bonding
-  IMAGES := sdcard.img.gz
-  IMAGE/sdcard.img.gz := boot-img-ext4 | sdcard-img-ext4 | gzip | append-metadata
+  IMAGES := sysupgrade.tar.gz
+  IMAGE_NAME := $$(IMAGE_PREFIX)-sysupgrade.tar.gz
+  IMAGE/sysupgrade.tar.gz := uDPU-firmware | gzip | append-metadata
   DEVICE_DTS := uDPU
   DTS_DIR := $(DTS_DIR)/marvell
   SUPPORTED_DEVICES := methode,uDPU

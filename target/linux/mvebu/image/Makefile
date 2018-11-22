@@ -80,10 +80,26 @@ define Build/omnia-medkit-initramfs
 		--file=$@ -C $(dir $(IMAGE_KERNEL))boot/ .
 endef
 
-define Build/rootfs-full
-	mkdir -p $(TARGET_DIR)/boot
-	$(foreach dts,$(DEVICE_DTS), $(CP) $(DTS_DIR)/$(dts).dtb $(TARGET_DIR)/boot;)
-	$(CP) $(IMAGE_KERNEL) $(TARGET_DIR)/boot/$(KERNEL_NAME)
+define Build/uDPU-firmware
+	# Create boot image
+	[ -d "$(PKG_BUILD_DIR)firmware" ] && rm -rf $(PKG_BUILD_DIR)firmware
+	mkdir -p $(PKG_BUILD_DIR){boot,firmware}
+	$(foreach dts,$(DEVICE_DTS), $(CP) $(DTS_DIR)/$(dts).dtb $(PKG_BUILD_DIR)boot;)
+	$(CP) $(IMAGE_KERNEL) $(PKG_BUILD_DIR)boot/$(KERNEL_NAME)
+	(cd $(PKG_BUILD_DIR)/boot; $(TAR) -cvzf $(PKG_BUILD_DIR)firmware/boot.tar.gz .)
+#	$(STAGING_DIR_HOST)/bin/make_ext4fs -J -L boot -l 16384K $(PKG_BUILD_DIR)firmware/boot.ext4 $(PKG_BUILD_DIR)boot
+
+	# Create recovery partition
+	mkdir -p $(PKG_BUILD_DIR)recovery
+	$(CP) $(KDIR_TMP)/$(IMG_PREFIX)-uDPU-initramfs.itb $(PKG_BUILD_DIR)recovery/
+	(cd $(PKG_BUILD_DIR)recovery; $(TAR) -cvzf $(PKG_BUILD_DIR)firmware/recovery.tar.gz .)
+#	$(STAGING_DIR_HOST)/bin/make_ext4fs -J -L recovery -l 16384K $(PKG_BUILD_DIR)firmware/recovery.ext4 $(PKG_BUILD_DIR)recovery
+
+	# Gunzip the rootfs
+	(cd $(TARGET_DIR); $(TAR) -cvzf $(PKG_BUILD_DIR)firmware/rootfs.tar.gz .)
+
+	# Tar the firmware
+	(cd $(PKG_BUILD_DIR)firmware/; $(TAR) -cf $(KDIR_TMP)/$(IMG_PREFIX)-uDPU-sysupgrade.tar.gz .)
 endef
 
 define Device/Default
