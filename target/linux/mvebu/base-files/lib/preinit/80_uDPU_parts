@@ -1,0 +1,42 @@
+#
+# Copyright (C) 2014-2016 OpenWrt.org
+# Copyright (C) 2016 LEDE-Project.org
+#
+
+preinit_mount_udpu() {
+
+	. /lib/functions.sh
+
+	case $(board_name) in
+	methode,uDPU)
+		if [ "$(ls /dev/mmcblk1p4)" ]; then
+			[ ! -d "/misc" ] && mkdir /misc
+			mount -t f2fs /dev/mmcblk1p4 /misc
+			[ -f "/misc/sysupgrade.tgz" ] && {
+				echo "- Restoring configuration -"
+				tar xzf /misc/sysupgrade.tgz -C /
+				rm -f /misc/sysupgrade.tgz
+				sync
+			}
+			[ -d "/misc/firmware" ] && {
+				[ "$(ls /dev/mmcblk1p2)" ] && {
+					echo "- Updating /recovery partition -"
+					mkfs.ext4 -q /dev/mmcblk1p2 | echo y &> /dev/null
+					mkdir -p /tmp/recovery
+					mount /dev/mmcblk1p2 /tmp/recovery
+					tar xzf /misc/firmware/recovery.tar.gz -C /tmp/recovery
+					sync
+					umount /tmp/recovery
+					rm -rf /tmp/recovery
+
+					# Replace previous backup with new one
+					[ -d "/misc/firmware_old" ] && rm -rf /misc/firmware_old
+					[ -d "/misc/firmware" ] && mv /misc/firmware /misc/firmware_old
+				}
+			}
+		fi
+		;;
+	esac
+}
+
+boot_hook_add preinit_main preinit_mount_udpu

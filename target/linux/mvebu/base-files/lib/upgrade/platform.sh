@@ -8,6 +8,12 @@ RAMFS_COPY_DATA='/etc/fw_env.config /var/lock/fw_printenv.lock'
 REQUIRE_IMAGE_METADATA=1
 
 platform_check_image() {
+	case "$(board_name)" in
+	methode,uDPU)
+		do_part_check
+		;;
+	esac
+
 	return 0
 }
 
