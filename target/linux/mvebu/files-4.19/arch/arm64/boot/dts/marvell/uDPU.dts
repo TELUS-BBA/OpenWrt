@@ -173,6 +173,26 @@
 	};
 };
 
+&spi0 {
+	status = "okay";
+
+	m25p80@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "jedec,spi-nor";
+		reg = <0>; /* Chip select 0 */
+		spi-max-frequency = <54000000>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&spi_quad_pins>;
+
+		partition@0 {
+			label = "uboot";
+			reg = <0 0x400000>;
+		};
+	};
+};
+
 /* CON31 */
 &usb3 {
 	status = "okay";
