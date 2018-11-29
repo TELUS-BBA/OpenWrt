@@ -1,0 +1,70 @@
+#!/bin/sh
+
+mtd_flash_uboot() {
+	$(which mtd) -r write $1 $2
+}
+
+case "$1" in
+	-u|--update)
+		u_boot_binary=$2
+		# Basic error handling
+		[ -z "$2" ] && \
+			printf "Argument is required\n" && exit 1
+		[ ! -f "$2" ] && \
+			printf "Invalid file specified\n" && exit 1
+
+		# Check if u-boot MTD device exists. Assuming device will always be called "uboot", fix this later.
+		u_boot_dev="$(grep "uboot" /proc/mtd | cut -d ':' -f1)"
+		[ -z "$u_boot_dev" ] && \
+			printf "u-boot MTD device cannot be found!\n" && exit 1
+		[ ! "$(which mtd)" ] && \
+			printf "MTD utils in not available, aborting!\n" && exit 1
+
+		# Binary magic check. Tested on couple of binaries from mvebu and mainline builds.
+		# flash-image.bin should always return '0006' but since this needs more testing, add override
+		# option.
+		sec_bypass=0
+
+		printf "Checking binary magic..\n"
+		if [ ! "$(which dd)" ]; then
+			printf "'dd' command is not available, cannot vertify binary integrity!\n" && sec_bypass=1
+		else
+			if [ "$(dd if=$2 bs=2 count=1 2>/dev/null | hexdump -n 2 -e '1/1 "%02x"')" != "0006" ]; then
+				printf "Binary integrity check failed!\n"
+				sec_bypass=1
+			fi
+		fi
+
+		if [ "$sec_bypass" == "1" ]; then
+			printf "\nWARNING: It is strongly adviseable to abort the process\n"
+			printf "as the flashing of the unverified binary can permenantly\n"
+			printf "brick the device!\n\n"
+			printf "Do you want to continue installation? (Y/n)"
+			read user_answ
+			case "$user_answ" in
+				Y|y|Yes|yes)
+					printf "Flashing the u-boot..\n"
+					mtd_flash_uboot $2 uboot # device won't work, we need to use label
+				;;
+				N|n|No|no)
+					printf "Aborting the installation.\n"
+					exit 1
+				;;
+				*)
+					printf "Invalid answer, exiting..\n"
+					exit
+				;;
+			esac
+		else
+			printf "Flashing the u-boot\n"
+			mtd_flash_uboot $2 uboot # device won't work, we need to use label
+		fi
+	;;
+	*)
+		printf "Usage: $(basename $0) [OPTION]... [FILE]\n"
+		printf "u-boot update script for OpenWrt\n\n"
+		printf "-u, --update FILE	update u-boot with a newer version\n\n"
+		printf "Examples:\n"
+		printf "$(basename $0) update /tmp/flash-image.bin\n"
+	;;
+esac
