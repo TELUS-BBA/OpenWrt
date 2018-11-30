@@ -96,7 +96,7 @@ define Build/uDPU-firmware
 	(cd $(TARGET_DIR); $(TAR) -cvzf $(PKG_BUILD_DIR)firmware/rootfs.tar.gz .)
 
 	# Tar the firmware
-	(cd $(PKG_BUILD_DIR)firmware/; $(TAR) -cvzf $(KDIR_TMP)/$(IMG_PREFIX)-uDPU-sysupgrade.tar.gz .)
+	(cd $(PKG_BUILD_DIR)firmware/; $(TAR) -cf $(KDIR_TMP)/$(IMG_PREFIX)-uDPU-sysupgrade.tar.gz .)
 endef
 
 define Device/Default
