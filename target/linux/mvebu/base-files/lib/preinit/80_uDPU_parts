@@ -13,7 +13,7 @@ preinit_mount_udpu() {
 			[ ! -d "/misc" ] && mkdir /misc
 			mount -t f2fs /dev/mmcblk1p4 /misc
 			[ -f "/misc/sysupgrade.tgz" ] && {
-				echo "- Restoring configuration -"
+				echo "- Restoring configuration files -"
 				tar xzf /misc/sysupgrade.tgz -C /
 				rm -f /misc/sysupgrade.tgz
 				sync
@@ -29,7 +29,7 @@ preinit_mount_udpu() {
 					umount /tmp/recovery
 					rm -rf /tmp/recovery
 
-					# Replace previous backup with new one
+					# Replace previous backup with the new one
 					[ -d "/misc/firmware_old" ] && rm -rf /misc/firmware_old
 					[ -d "/misc/firmware" ] && mv /misc/firmware /misc/firmware_old
 				}

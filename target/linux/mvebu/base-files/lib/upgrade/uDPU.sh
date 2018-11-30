@@ -1,5 +1,13 @@
 emmc_dev="/dev/mmcblk1"
 
+part_prep() {
+	 if [ "$(grep $1 /proc/mounts)" ]; then
+		mounted_part="$(grep $1 /proc/mounts | awk '{print $2}' | head -1)"
+		umount $mounted_part
+		[ "$(grep -wo $mounted_part /proc/mounts)" ] && umount -l $mounted_part
+	fi
+}
+
 do_part_check() {
 	local emmc_parts="1 2 3 4"
 	local part_valid="1"
@@ -16,6 +24,7 @@ do_part_check() {
 
 		# Format the /misc part right away as we will need it for the firmware
 		printf "Formating /misc partition, this make take a while..\n"
+		part_prep ${emmc_dev}p4
 		mkfs.f2fs -q -l misc ${emmc_dev}p4
 		[ $? -eq 0 ] && printf "/misc partition formated successfully\n" || printf "/misc partition formatting failed\n"
 
@@ -38,6 +47,7 @@ do_misc_prep() {
 
 			format_count=0
 			while [ "$format_count" -lt "1" ]; do
+				part_prep ${emmc_dev}p4
 				mkfs.f2fs -q -l misc ${emmc_dev}p4
 				mount ${emmc_dev}p4 /misc
 				if [ $? -ne 0 ]; then
@@ -55,16 +65,18 @@ do_misc_prep() {
 
 do_initial_setup() {
 	# Prepare /recovery parition
+	part_prep ${emmc_dev}p2
 	mkfs.ext4 -q ${emmc_dev}p2 | echo y &> /dev/null
 
 	# Prepare /boot partition
+	part_prep ${emmc_dev}p1
 	mkfs.ext4 -q ${emmc_dev}p1 | echo y &> /dev/null
 
 	# Prepare /root partition
 	printf "Formating /root partition, this may take a while..\n"
+	part_prep ${emmc_dev}p3
 	mkfs.f2fs -q -l rootfs ${emmc_dev}p3
 	[ $? -eq 0 ] && printf "/root partition reformated\n"
-
 }
 
 do_regular_upgrade() {
@@ -101,6 +113,9 @@ platform_do_upgrade_uDPU() {
 	[ $? -eq 0 ] && printf "/root partition updated successfully\n" || printf "/root partition update failed\n"
 	sync
 
+	# Saving configuration files over sysupgrade
+	platform_copy_config_uDPU
+
 	# Remove temp mounts
 	tmp_parts=$(grep "${emmc_dev}" /proc/mounts | awk '{print $2}')
 	for part in ${tmp_parts}; do
@@ -108,11 +123,15 @@ platform_do_upgrade_uDPU() {
 		# Force umount is necessary
 		[ "$(grep "${part}" /proc/mounts)" ] && umount -l $part
 	done
+
+	# Sysupgrade complains about /tmp and /dev, so we can detach them here
+	umount -l /tmp
+	umount -l /dev
 }
 
 platform_copy_config_uDPU() {
-	# Work in progress
-	do_misc_prep
-	cp -f /tmp/sysupgrade.tgz /misc
-	sync
+	if [ -f "/tmp/sysupgrade.tgz" ]; then
+		cp -f /tmp/sysupgrade.tgz /misc
+		sync
+	fi
 }

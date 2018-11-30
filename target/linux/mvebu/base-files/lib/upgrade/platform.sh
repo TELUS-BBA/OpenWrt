@@ -42,7 +42,7 @@ platform_copy_config() {
 		platform_copy_config_sdcard "$ARGV"
 		;;
 	methode,uDPU)
-		platform_copy_config_sdcard "$ARGV"
+		platform_copy_config_uDPU
 		;;
 	esac
 }
