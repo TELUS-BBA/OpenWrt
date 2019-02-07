@@ -1,48 +1,12 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 /*
- * DTS for uDPU based on the following
- * Device Tree file for Marvell Armada 3720 development board
- * (DB-88F3720-DDR3)
+ * Device tree for the uDPU board.
+ * Based on Marvell Armada 3720 development board (DB-88F3720-DDR3)
  * Copyright (C) 2016 Marvell
+ * Copyright (C) 2019 Methode Electronics
+ * Copyright (C) 2019 Telus
  *
- * Gregory CLEMENT <gregory.clement@free-electrons.com>
- *
- * This file is dual-licensed: you can use it either under the terms
- * of the GPL or the X11 license, at your option. Note that this dual
- * licensing only applies to this file, and not this project as a
- * whole.
- *
- *  a) This file is free software; you can redistribute it and/or
- *     modify it under the terms of the GNU General Public License as
- *     published by the Free Software Foundation; either version 2 of the
- *     License, or (at your option) any later version.
- *
- *     This file is distributed in the hope that it will be useful
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- * Or, alternatively
- *
- *  b) Permission is hereby granted, free of charge, to any person
- *     obtaining a copy of this software and associated documentation
- *     files (the "Software"), to deal in the Software without
- *     restriction, including without limitation the rights to use
- *     copy, modify, merge, publish, distribute, sublicense, and/or
- *     sell copies of the Software, and to permit persons to whom the
- *     Software is furnished to do so, subject to the following
- *     conditions:
- *
- *     The above copyright notice and this permission notice shall be
- *     included in all copies or substantial portions of the Software.
- *
- *     THE SOFTWARE IS PROVIDED , WITHOUT WARRANTY OF ANY KIND
- *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY
- *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- *     OTHER DEALINGS IN THE SOFTWARE.
+ * Vladimir Vid <vladimir.vid@sartura.hr>
  */
 
 /dts-v1/;
@@ -52,13 +16,13 @@
 
 / {
 	model = "Methode uDPU Board";
-	compatible = "marvell,armada-3720-db", "marvell,armada3720", "marvell,armada3710";
+	compatible = "methode,udpu", "marvell,armada3720";
 
 	chosen {
 		stdout-path = "serial0:115200n8";
 	};
 
-	memory {
+	memory@0 {
 		device_type = "memory";
 		reg = <0x00000000 0x00000000 0x00000000 0x20000000>;
 	};
@@ -67,61 +31,35 @@
 		pinctrl-names = "default";
 		compatible = "gpio-leds";
 
-		led@487 {
+		power1 {
 			label = "power:green:led1";
 			gpios = <&gpionb 11 GPIO_ACTIVE_LOW>;
-			linux,default-trigger = "heartbeat";
-			default-state = "off";
 		};
 
-		led@488 {
+		power2 {
 			label = "power:red:led1";
-			gpios = <&gpionb 12 GPIO_ACTIVE_HIGH>;
-			linux,default-trigger = "heartbeat";
-			default-state = "off";
+			gpios = <&gpionb 12 GPIO_ACTIVE_LOW>;
 		};
 
-		led@489 {
+		network1 {
 			label = "network:green:led2";
-			gpios = <&gpionb 13 GPIO_ACTIVE_HIGH>;
-			linux,default-trigger = "network";
-			default-state = "off";
+			gpios = <&gpionb 13 GPIO_ACTIVE_LOW>;
 		};
 
-		led@490 {
+		network2 {
 			label = "network:red:led2";
-			gpios = <&gpionb 14 GPIO_ACTIVE_HIGH>;
-			linux,default-trigger = "network";
-			default-state = "off";
+			gpios = <&gpionb 14 GPIO_ACTIVE_LOW>;
 		};
 
-		led@491 {
+		alarm1 {
 			label = "alarm:green:led3";
-			gpios = <&gpionb 15 GPIO_ACTIVE_HIGH>;
-			linux,default-trigger = "alarm";
-			default-state = "off";
+			gpios = <&gpionb 15 GPIO_ACTIVE_LOW>;
 		};
 
-		led@492 {
+		alarm2 {
 			label = "alarm:red:led3";
-			gpios = <&gpionb 16 GPIO_ACTIVE_HIGH>;
-			linux,default-trigger = "alarm";
-			default-state = "off";
+			gpios = <&gpionb 16 GPIO_ACTIVE_LOW>;
 		};
-	};
-
-	usb3_phy: usb3-phy {
-		compatible = "usb-nop-xceiv";
-		vcc-supply = <&exp_usb3_vbus>;
-	};
-
-	exp_usb3_vbus: usb3-vbus {
-		compatible = "regulator-fixed";
-		regulator-name = "usb3-vbus";
-		regulator-min-microvolt = <5000000>;
-		regulator-max-microvolt = <5000000>;
-		enable-active-high;
-		regulator-always-on;
 	};
 
 	sfp_eth0: sfp-eth0 {
@@ -144,70 +82,45 @@
 };
 
 &sdhci0 {
-	non-removable;
+	status = "okay";
 	bus-width = <8>;
 	mmc-ddr-1_8v;
 	mmc-hs400-1_8v;
 	marvell,pad-type = "fixed-1-8v";
-	status = "okay";
-};
-
-&sdhci1 {
-	marvell,xenon-phy-type = "emmc 5.0 phy";
-	cd-gpios = <&gpiosb 2 GPIO_ACTIVE_LOW>;
-	bus-width = <4>;
-	marvell,pad-type = "fixed-1-8v";
-	status = "okay";
 	non-removable;
 	no-sd;
 	no-sdio;
 };
 
-&mdio {
-	status = "okay";
-	phy0: ethernet-phy@0 {
-		reg = <0>;
-	};
-	phy1: ethernet-phy@1 {
-		reg = <1>;
-	};
-};
-
 &spi0 {
 	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi_quad_pins>;
 
 	m25p80@0 {
+		compatible = "jedec,spi-nor";
+		reg = <0>;
 		#address-cells = <1>;
 		#size-cells = <1>;
-		compatible = "jedec,spi-nor";
-		reg = <0>; /* Chip select 0 */
 		spi-max-frequency = <54000000>;
 
-		pinctrl-names = "default";
-		pinctrl-0 = <&spi_quad_pins>;
-
-		partition@0 {
-			label = "uboot";
-			reg = <0 0x400000>;
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+			/* only bootloader is located on the SPI */
+			partition@0 {
+				label = "uboot";
+				reg = <0 0x400000>;
+			};
 		};
 	};
-};
-
-/* CON31 */
-&usb3 {
-	status = "okay";
-	usb-phy = <&usb3_phy>;
 };
 
 &i2c0 {
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c1_pins>;
-
-	eeprom@50 {
-		compatible = "atmel,24c04";
-		reg = <0x50>;
-	};
 };
 
 &i2c1 {
@@ -215,14 +128,17 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c2_pins>;
 
-	eeprom@50 {
-		compatible = "atmel,24c04";
-		reg = <0x50>;
+	lm75@48 {
+		status = "okay";
+		compatible = "lm75";
+		reg = <0x48>;
 	};
-};
 
-&uart0 {
-	status = "okay";
+	lm75@49 {
+		status = "okay";
+		compatible = "lm75";
+		reg = <0x49>;
+	};
 };
 
 &eth0 {
@@ -237,4 +153,12 @@
 	status = "okay";
 	managed = "in-band-status";
 	sfp = <&sfp_eth1>;
+};
+
+&usb3 {
+	status = "okay";
+};
+
+&uart0 {
+	status = "okay";
 };
