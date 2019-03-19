@@ -80,6 +80,18 @@ define Build/omnia-medkit-initramfs
 		--file=$@ -C $(dir $(IMAGE_KERNEL))boot/ .
 endef
 
+define Build/uDPU-firmware
+	mkdir -p $(PKG_BUILD_DIR)/{boot,firmware}
+	$(foreach dts,$(DEVICE_DTS), $(CP) $(DTS_DIR)/$(dts).dtb $(PKG_BUILD_DIR)boot;)
+	$(CP) $(IMAGE_KERNEL) $(PKG_BUILD_DIR)boot/$(KERNEL_NAME)
+	(cd $(PKG_BUILD_DIR)/boot; $(TAR) -cvzf $(PKG_BUILD_DIR)firmware/boot.tar.gz .)
+	mkdir -p $(PKG_BUILD_DIR)recovery
+	$(CP) $(KDIR_TMP)/$(IMG_PREFIX)-uDPU-initramfs.itb $(PKG_BUILD_DIR)recovery/
+	(cd $(PKG_BUILD_DIR)recovery; $(TAR) -cvzf $(PKG_BUILD_DIR)firmware/recovery.tar.gz .)
+	(cd $(TARGET_DIR); $(TAR) -cvzf $(PKG_BUILD_DIR)firmware/rootfs.tar.gz .)
+	(cd $(PKG_BUILD_DIR)firmware/; $(TAR) -cf $(KDIR_TMP)/$(IMG_PREFIX)-uDPU-sysupgrade.tar.gz .)
+endef
+
 define Device/Default
   PROFILES := Default
   DEVICE_DTS := $(1)

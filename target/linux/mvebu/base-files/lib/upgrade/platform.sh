@@ -8,6 +8,11 @@ RAMFS_COPY_DATA='/etc/fw_env.config /var/lock/fw_printenv.lock'
 REQUIRE_IMAGE_METADATA=1
 
 platform_check_image() {
+	case "$(board_name)" in
+	methode,uDPU)
+		do_part_check
+		;;
+	esac
 	return 0
 }
 
@@ -18,6 +23,9 @@ platform_do_upgrade() {
 		;;
 	armada-385-turris-omnia|armada-388-clearfog-base|armada-388-clearfog-pro|globalscale,espressobin|marvell,armada8040-mcbin)
 		platform_do_upgrade_sdcard "$ARGV"
+		;;
+	methode,uDPU)
+		platform_do_upgrade_uDPU "$ARGV"
 		;;
 	*)
 		default_do_upgrade "$ARGV"
@@ -31,6 +39,9 @@ platform_copy_config() {
 		;;
 	armada-385-turris-omnia|armada-388-clearfog-base|armada-388-clearfog-pro|globalscale,espressobin|marvell,armada8040-mcbin)
 		platform_copy_config_sdcard "$ARGV"
+		;;
+	methode,uDPU)
+		platform_copy_config_uDPU
 		;;
 	esac
 }

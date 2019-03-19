@@ -33,6 +33,9 @@ globalscale,espressobin|\
 marvell,armada8040-mcbin)
 	ubootenv_add_uci_config "/dev/mtd0" "0x3f0000" "0x10000" "0x10000" "1"
 	;;
+methode,uDPU)
+	ubootenv_add_uci_config "/dev/mtd0" "0x180000" "0x10000" "0x10000"
+	;;
 esac
 
 config_load ubootenv

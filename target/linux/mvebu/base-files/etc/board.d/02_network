@@ -58,6 +58,9 @@ marvell,armada8040-db)
 marvell,armada7040-db)
 	ucidef_set_interfaces_lan_wan "eth0 eth2" "eth1"
 	;;
+methode,uDPU)
+	ucidef_set_interfaces_lan_wan "eth1" "eth0"
+	;;
 *)
 	ucidef_set_interface_lan "eth0"
 	;;
