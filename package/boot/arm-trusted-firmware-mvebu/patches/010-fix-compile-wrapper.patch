@@ -1,0 +1,13 @@
+--- a/scripts/ci/compile.sh
++++ b/scripts/ci/compile.sh
+@@ -14,8 +14,8 @@
+ 
+ 
+ ## =v=v=v=v=v=v=v=v=v=v=v CI WRAPPER - Do not Modify! v=v=v=v=v=v=v=v=v=v=v= ##
+-set -euo pipefail
+-shopt -s extglob
++#set -euo pipefail
++#shopt -s extglob
+ ##==================================== USAGE ================================##
+ function usage {
+ 	echo """
