@@ -7,8 +7,6 @@
 
 include $(TOPDIR)/rules.mk
 
-CC_HOST:=i686
-
 PKG_NAME:=arm-trusted-firmware-mvebu
 PKG_RELEASE:=2.1
 
@@ -39,6 +37,12 @@ $(call Package/arm-trusted-firmware-mvebu/default)
     UBOOT:=uDPU
     CLOCKSPRESET:=CPU_1000_DDR_800
     PLAT:=a3700
+    USE_COHERENT_MEM:=0
+    LOG_LEVEL:=20
+    SECURE:=0
+    PARTNUM:=0
+    DDR_TOPOLOGY:=0
+    BOOTDEV:=SPINOR
 endef
 
 # A3700-utils - required for the WTP
@@ -69,26 +73,16 @@ define Download/mv-ddr-marvell
   SUBDIR:=$(MV_DDR_NAME)
 endef
 
-# Correct 32-bit and 64-bit cross compiler is required for building the image
+# 32-bit cross compiler is required for building the WTMI image
 LINARO_NAME:=gcc-linaro
 LINARO_RELEASE:=6
-LINARO_VERSION:=5.0-2018.12
-HOST_ARCH:=i686
-ARM32_ARCH:=arm-linux-gnueabi
-ARM64_ARCH:=aarch64-linux-gnu
-LINARO32_SOURCE:=$(LINARO_NAME)-$(LINARO_RELEASE).$(LINARO_VERSION)-$(HOST_ARCH)_$(ARM32_ARCH).tar.xz
-LINARO64_SOURCE:=$(LINARO_NAME)-$(LINARO_RELEASE).$(LINARO_VERSION)-$(HOST_ARCH)_$(ARM64_ARCH).tar.xz
+LINARO_VERSION:=5.0-2018.12-i686_arm-linux-gnueabi
+LINARO_SOURCE=$(LINARO_NAME)-$(LINARO_RELEASE).$(LINARO_VERSION).tar.xz
 
 define Download/gcc-linaro
-  FILE:=$(LINARO32_SOURCE)
-  URL:=https://releases.linaro.org/components/toolchain/binaries/latest-$(LINARO_RELEASE)/$(ARM32_ARCH)/
+  FILE:=$(LINARO_SOURCE)
+  URL:=https://releases.linaro.org/components/toolchain/binaries/latest-$(LINARO_RELEASE)/arm-linux-gnueabi/
   HASH:=24134423d48c13c8754f4518ce22bb490c8d2bd03a142a03b64e8a118cd188b8
-endef
-
-define Download/gcc-linaro64
-  FILE:=$(LINARO64_SOURCE)
-  URL:=https://releases.linaro.org/components/toolchain/binaries/latest-$(LINARO_RELEASE)/$(ARM64_ARCH)/
-  HASH:=e5e9b26d5d4c8f5ff9f4b0ed94199ab5bf9e9be8fabb9ab54e1099df931ee6cd
 endef
 
 define Build/Prepare
@@ -96,33 +90,34 @@ define Build/Prepare
 	$(eval $(call Download,a3700-utils))
 	$(eval $(call Download,mv-ddr-marvell))
 	$(eval $(call Download,gcc-linaro))
-	$(eval $(call Download,gcc-linaro64))
 
 	rm -rf $(PKG_BUILD_DIR)
 	$(TAR) -C $(BUILD_DIR) -xf $(DL_DIR)/$(PKG_SOURCE)
 	$(TAR) -C $(STAGING_DIR_IMAGE) -xf $(DL_DIR)/$(A3700_UTILS_SOURCE)
 	$(TAR) -C $(STAGING_DIR_IMAGE) -xf $(DL_DIR)/$(MV_DDR_SOURCE)
-	$(TAR) -C $(STAGING_DIR_IMAGE) -xf $(DL_DIR)/$(LINARO32_SOURCE)
-	$(TAR) -C $(STAGING_DIR_IMAGE) -xf $(DL_DIR)/$(LINARO64_SOURCE)
+	$(TAR) -C $(STAGING_DIR_IMAGE) -xf $(DL_DIR)/$(LINARO_SOURCE)
 endef
 
-# Clean the default CFLAGS so they don't mess up with the build
+# Clean the default FLAGS so they don't mess up with the build
 TARGET_CFLAGS = ""
+TARGET_CXFLAGS= ""
+TARGET_LDFLAGS= ""
 
-MAKE_FLAGS = \
-	CROSS_COMPILE=$(STAGING_DIR_IMAGE)/$(LINARO_NAME)-$(LINARO_RELEASE).$(LINARO_VERSION)-$(HOST_ARCH)_$(ARM64_ARCH)/bin/$(ARM64_ARCH)- \
-	CROSS_CM3=$(STAGING_DIR_IMAGE)/$(LINARO_NAME)-$(LINARO_RELEASE).$(LINARO_VERSION)-$(HOST_ARCH)_$(ARM32_ARCH)/bin/$(ARM32_ARCH)- \
+MAKE_VARS = \
+	CROSS_COMPILE="$(TARGET_CROSS)"
+
+MAKE_FLAGS += \
+	CROSS_CM3=$(STAGING_DIR_IMAGE)/$(LINARO_NAME)-$(LINARO_RELEASE).$(LINARO_VERSION)/bin/arm-linux-gnueabi- \
 	BL33=$(STAGING_DIR_IMAGE)/u-boot.bin \
 	MV_DDR_PATH=$(STAGING_DIR_IMAGE)/$(MV_DDR_NAME) \
 	WTP=$(STAGING_DIR_IMAGE)/$(A3700_UTILS_NAME) \
 	CLOCKSPRESET=$(CLOCKSPRESET) \
-	DEBUG=0 \
-	USE_COHERENT_MEM=0 \
-	LOG_LEVEL=20 \
-	SECURE=0 \
-	PARTNUM=0 \
-	DDR_TOPOLOGY=0 \
-	BOOTDEV=SPINOR \
+	USE_COHERENT_MEM=$(USE_COHERENT_MEM) \
+	LOG_LEVEL=$(LOG_LEVEL) \
+	SECURE=$(SECURE) \
+	PARTNUM=$(PARTNUM) \
+	DDR_TOPOLOGY=$(DDR_TOPOLOGY) \
+	BOOTDEV=$(BOOTDEV) \
 	PLAT=$(PLAT) \
 	all \
 	fip
