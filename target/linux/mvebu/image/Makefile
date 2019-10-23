@@ -70,7 +70,7 @@ endef
 
 define Build/uDPU-firmware
 	(rm -fR $@-fw; mkdir -p $@-fw)
-	$(CP) $(BIN_DIR)/$(IMAGE_PREFIX)-initramfs.itb $@-fw/recovery.itb
+	$(CP) $(KDIR_TMP)/$(IMAGE_PREFIX)-initramfs.itb $@-fw/recovery.itb
 	$(CP) $@-boot.scr $@-fw/boot.scr
 	(cd $(TARGET_DIR); $(TAR) -cvzf $@-fw/rootfs.tgz .)
 	(cd $@.boot; $(TAR) -cvzf $@-fw/boot.tgz .)
