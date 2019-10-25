@@ -70,7 +70,7 @@ endef
 # 32-bit cross compiler is required for building the WTMI image
 LINARO_NAME:=gcc-linaro
 LINARO_RELEASE:=6
-LINARO_VERSION:=5.0-2018.12-x86_64_arm-linux-gnueabi
+LINARO_VERSION:=5.0-2018.12-$(HOST_ARCH)_arm-linux-gnueabi
 LINARO_SOURCE=$(LINARO_NAME)-$(LINARO_RELEASE).$(LINARO_VERSION).tar.xz
 
 define Download/gcc-linaro
@@ -87,6 +87,8 @@ define Build/Prepare
 
 	rm -rf $(PKG_BUILD_DIR)
 	$(TAR) -C $(BUILD_DIR) -xf $(DL_DIR)/$(PKG_SOURCE)
+
+	mkdir -p $(STAGING_DIR_IMAGE)
 	$(TAR) -C $(STAGING_DIR_IMAGE) -xf $(DL_DIR)/$(A3700_UTILS_SOURCE)
 	$(TAR) -C $(STAGING_DIR_IMAGE) -xf $(DL_DIR)/$(MV_DDR_SOURCE)
 	$(TAR) -C $(STAGING_DIR_IMAGE) -xf $(DL_DIR)/$(LINARO_SOURCE)
@@ -111,9 +113,6 @@ MAKE_FLAGS = \
 define Build/InstallDev
 	$(CP) $(PKG_BUILD_DIR)/build/$(PLAT)/release/flash-image.bin $(BIN_DIR)/u-boot-$(BOARDNAME)/
 	$(CP) $(PKG_BUILD_DIR)/build/$(PLAT)/release/uart-images.tgz $(BIN_DIR)/u-boot-$(BOARDNAME)/
-endef
-
-define Package/arm-trusted-firmware-mvebu/install
 endef
 
 $(eval $(call BuildPackage,arm-trusted-firmware-uDPU))
